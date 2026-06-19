@@ -1,0 +1,25 @@
+﻿@* 外層容器：使用 Bootstrap 樣式設定置中、置頂外距(mt-5)，並限制最大寬度為 400 像素 *@
+<div class="container mt-5" style="max-width: 400px;">
+    <h2>會員登入</h2>
+    <hr />
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+    @* 登入區域 *@
+    <form asp-action="Login" method="post">
+        @* 輸入區塊：使用者名稱 *@
+        <div class="mb-3">
+            <label class="form-label">使用者名稱</label>
+            <input name="name" type="text" class="form-control" required />
+        </div>
+        @* 輸入區塊：密碼 *@
+        <div class="mb-3">
+            <label class="form-label">密碼</label>
+            <input name="password" type="password" class="form-control" required />
+        </div>
+        @* 提交按鈕：type="submit" 點擊後觸發表單送出，btn-success 為藍色按鈕，w-100 為全寬 *@
+        <button type="submit" class="btn btn-success w-100">登入</button>
+    </form>
+    <p class="mt-3 text-center"><a asp-action="Register">還沒有帳號？前往註冊</a></p>
+</div>

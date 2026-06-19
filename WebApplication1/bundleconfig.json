@@ -1,0 +1,10 @@
+[
+  {
+    "outputFileName": "wwwroot/js/helloworld.js",
+    "inputFiles": [
+      "JS/one.js",
+      "JS/two.js"
+    ],"minify": {"enabled": true}
+    
+  }
+]
