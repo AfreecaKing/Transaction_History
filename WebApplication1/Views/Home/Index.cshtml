@@ -3,6 +3,20 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <div class="hero-content">
+        <h1>投資報酬率分析</h1>
+        @if(User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <a class="btn btn-danger btn-lg" asp-controller="Money" asp-action="Index">
+                開始分析
+            </a>
+        }
+        else
+        {
+            <a class="btn btn-danger btn-lg" asp-controller="Account" asp-action="Login">
+                開始分析
+            </a>
+		}
+
+    </div>
 </div>

@@ -9,75 +9,49 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
 </head>
-<body class="bg-dark text-white">
+<body>
     <header>
-        @*
-            nav class:
-           - 加上 rounded-pill：把整條導覽列的左、右兩端變成橢圓形
-           - 加上 px-4：讓導覽列內部的東西往內縮
-           - shadow-sm：加上陰影
-        *@
-        <div class="container-fluid mt-2 px-4">
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-opacity-10 bg-white border border-light box-shadow  rounded-pill px-4 mb-3 shadow-sm">
-                <!--寬度調到100%-->
-                <div class="container-fluid">
-                    <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">交易紀錄</a>
-                    <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">資金管理</a>
-                    <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-
-                        @*用ms-auto將登入鍵靠右 下面分為登入和未登入狀態的按鈕顯示*@
-                        <ul class="navbar-nav ms-auto align-items-center">
-                            @*已登入*@
-                            @if (Context.Session.GetString("UserName")!=null)
-                            {
-                                <!-- Navbar 的下拉選單 -->
-                                <li class="nav-item dropdown">
-                                    <!-- 點擊後展開 dropdown 的按鈕 -->
-                                    <a class="nav-link dropdown-toggle text-light" href="#" id="userDropdown" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa-solid fa-user me-1"></i> @Context.Session.GetString("UserName")
-                                    </a>
-                                    <!-- 下拉選單內容（靠右 + 陰影效果） -->
-                                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                                        <li>
-                                            @* Account/Logout Function *@
-                                            <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
-                                                <i class="fa-solid fa-right-from-bracket me-1"></i> 登出
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                            }
-                            @*未登入*@
-                            else 
-                            {
-                                @* 
-                                - btn: 讓它具備按鈕的立體與點擊效果
-                                - btn-outline-dark: 變成黑色細線外框
-                                - rounded-pill: 把邊角變成膠囊狀
-                                - px-4: 增加左右的留白寬度
-                                *@
-                                <li class="nav-item me-2">                           
-                                    <a class="btn btn-outline-light rounded-pill px-3 " asp-controller="Account" asp-action="Login">登入</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="btn btn-outline-light rounded-pill px-3" asp-controller="Account" asp-action="Register">註冊</a>
-                                </li>                               
-                            }                  
-                        </ul>
-                    </div>
+        
+        <nav class="navbar navbar-expand-md bg-body-tertiary ">
+            <div class="container-fluid">
+                <a class="navbar-brand text-dark " asp-controller="Home" asp-action="Index">
+                    <img src="@Url.Content("~/Pic/Logo.png")" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                    ROIC
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+                        @if (User.Identity!=null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="fa-solid fa-user me-1"></i> @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow" >
+                                    <li>
+                                        <a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">
+                                            <i class="fa-solid fa-right-from-bracket me-1"></i> 登出
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-dark  px-3" asp-controller="Account" asp-action="Login">登入</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-dark  px-3" asp-controller="Account" asp-action="Register">註冊</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
-            </nav>
-        </div>   
+                
+            </div>
+        </nav>  
     </header>
     <div class="container">
         <main role="main" class="pb-3">

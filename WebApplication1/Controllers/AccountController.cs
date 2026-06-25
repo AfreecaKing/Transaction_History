@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -36,22 +38,36 @@ namespace WebApplication1.Controllers
         public IActionResult Login() => View();
         // 處理登入資料 (POST)
         [HttpPost]
-        public IActionResult Login(string name, string password) { 
-            var user = _context.Users.FirstOrDefault(u => u.Name == name && u.Password == password);
+        public async Task<IActionResult> Login(string name, string password)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.Name == name && u.Password == password);
+
             if (user != null)
             {
-                HttpContext.Session.SetString("UserName", user.Name); // 將使用者name存入Session
-                return RedirectToAction("Index","Home");
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Name)
+                };
+
+                var identity = new ClaimsIdentity(claims, "Cookies");
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync("Cookies", principal);
+
+                return RedirectToAction("Index", "Home");
             }
+
             ViewBag.Error = "帳號或密碼錯誤！";
             return View();
         }
 
-        public IActionResult Logout()
+        // Logout
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.Session.Clear(); // 移除Session中的data
-            return RedirectToAction("Index","Home");    //return to home page
+            await HttpContext.SignOutAsync("Cookies");
+            return RedirectToAction("Index", "Home");
         }
-       
+
     }
 }

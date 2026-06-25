@@ -13,9 +13,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+//Session 設定，這裡設定 30 分鐘沒動靜就自動登出
 builder.Services.AddSession(options => {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // 30分鐘沒動靜就自動登出
+    options.IdleTimeout = TimeSpan.FromMinutes(30); 
 });
+//Cookie 認證設定，這裡指定登入頁面為 /Account/Login
+builder.Services.AddAuthentication("Cookies").AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Account/Login";
+    });
+
+builder.Services.AddAuthorization();
+
 // ====================================================================
 var app = builder.Build();
 
@@ -26,9 +35,12 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseSession(); //  讓網站啟用 Session 魔法
+
+app.UseSession(); //  讓網站啟用 Session 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();    // 讓網站啟用 Cookie 
+app.UseAuthorization();
 
 app.UseRouting();
 
