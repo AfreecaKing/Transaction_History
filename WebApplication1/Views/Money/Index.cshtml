@@ -1,3 +1,142 @@
-﻿<div class="container">
-	<h1>Money Pool</h1>
+﻿@{
+    ViewData["Title"] = "資金池管理";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>資金池管理</h2>
+
+        <a class="btn btn-primary" asp-action="CreatePool" asp-controller="Money">
+            新增資金池
+        </a>
+
+    </div>
+
+    <div class="row g-4">
+
+        <!-- 台股1號 -->
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+                    <h5 class="card-title">台股1號</h5>
+
+                    <hr>
+
+                    <p>目前市值：NT$ 180,000</p>
+
+                    <p>投入資金：NT$ 130,000</p>
+
+                    <p class="text-success fw-bold fs-4">
+                        +38.46%
+                    </p>
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-outline-primary w-100">
+                        查看詳細
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 美股1號 -->
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+                    <h5 class="card-title">美股1號</h5>
+
+                    <hr>
+
+                    <p>目前市值：NT$ 85,000</p>
+
+                    <p>投入資金：NT$ 75,000</p>
+
+                    <p class="text-success fw-bold fs-4">
+                        +13.33%
+                    </p>
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-outline-primary w-100">
+                        查看詳細
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ETF退休帳戶 -->
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+                    <h5 class="card-title">ETF退休帳戶</h5>
+
+                    <hr>
+
+                    <p>目前市值：NT$ 250,000</p>
+
+                    <p>投入資金：NT$ 280,000</p>
+
+                    <p class="text-danger fw-bold fs-4">
+                        -10.71%
+                    </p>
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-outline-primary w-100">
+                        查看詳細
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+                    <h5 class="card-title">ETF退休帳戶</h5>
+
+                    <hr>
+
+                    <p>目前市值：NT$ 250,000</p>
+
+                    <p>投入資金：NT$ 280,000</p>
+
+                    <p class="text-danger fw-bold fs-4">
+                        -10.71%
+                    </p>
+                </div>
+
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-outline-primary w-100">
+                        查看詳細
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center mt-4">
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
 </div>

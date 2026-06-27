@@ -10,5 +10,9 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+        public IActionResult CreatePool()
+        {
+            return View();
+        }
     }
 }
