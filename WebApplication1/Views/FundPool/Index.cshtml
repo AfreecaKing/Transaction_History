@@ -1,0 +1,38 @@
+﻿@model IEnumerable<FundPool>
+@{
+    ViewData["Title"] = "資金池管理";
+}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>資金池管理</h2>
+        <a class="btn btn-primary" asp-action="CreatePool" asp-controller="FundPool">
+            新增資金池
+        </a>
+    </div>
+    <div class="row g-4">
+        @foreach (var pool in Model)
+        {
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@pool.PoolName</h5>
+                        <hr>
+                        <p>目前市值：NT$ @pool.CurrentValue.ToString("N0")</p>
+                        <p>建立時間：@pool.CreateTime.ToString("yyyy/MM/dd")</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-outline-primary w-100">
+                            查看詳細
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center text-muted mt-4">
+                <p>目前沒有資金池，點擊右上角新增吧！</p>
+            </div>
+        }
+    </div>
+</div>

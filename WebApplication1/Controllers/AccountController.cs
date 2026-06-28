@@ -47,7 +47,8 @@ namespace WebApplication1.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.Name)
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
                 };
 
                 var identity = new ClaimsIdentity(claims, "Cookies");
