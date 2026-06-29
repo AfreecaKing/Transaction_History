@@ -33,7 +33,20 @@
                            class="btn btn-outline-primary w-100">
                             查看詳細
                         </a>
+                        <form asp-action="Delete"
+                              asp-controller="FundPool"
+                              asp-route-id="@pool.FundPoolId"
+                              method="post"
+                              style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-outline-danger w-100"
+                                    onclick="return confirm('確定刪除此資金池？所有交易紀錄也會一併刪除！')">
+                                刪除
+                            </button>
+                        </form>
                     </div>
+                  
                 </div>
             </div>
         }
