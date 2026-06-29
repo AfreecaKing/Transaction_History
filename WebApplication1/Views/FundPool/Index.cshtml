@@ -1,15 +1,21 @@
 ﻿@model IEnumerable<FundPool>
 @{
     ViewData["Title"] = "資金池管理";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
 }
-<div class="container mt-4">
+
+<div class="container mt-4 d-flex flex-column" style="min-height: 80vh">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>資金池管理</h2>
         <a class="btn btn-primary" asp-action="CreatePool" asp-controller="FundPool">
             新增資金池
         </a>
     </div>
-    <div class="row g-4">
+
+    @* 卡片區域，flex-grow-1 讓它撐滿剩餘空間 *@
+    <div class="row g-4 flex-grow-1 align-content-start">
         @foreach (var pool in Model)
         {
             <div class="col-12 col-md-4">
@@ -21,9 +27,7 @@
                         <p>建立時間：@pool.CreateTime.ToString("yyyy/MM/dd")</p>
                     </div>
                     <div class="card-footer bg-white border-0">
-                        <button class="btn btn-outline-primary w-100">
-                            查看詳細
-                        </button>
+                        <button class="btn btn-outline-primary w-100">查看詳細</button>
                     </div>
                 </div>
             </div>
@@ -35,4 +39,41 @@
             </div>
         }
     </div>
+
+    @* pagination 永遠在最底部 *@
+    @if (Model.Any())
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-controller="FundPool"
+                       asp-route-page="@(currentPage - 1)">
+                        &laquo;
+                    </a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-controller="FundPool"
+                           asp-route-page="@i">
+                            @i
+                        </a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-controller="FundPool"
+                       asp-route-page="@(currentPage + 1)">
+                        &raquo;
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+
 </div>

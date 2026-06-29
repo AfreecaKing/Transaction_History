@@ -17,13 +17,22 @@ namespace WebApplication1.Controllers
             return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         }
         // 顯示使用者的資金池列表
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             int userId = GetUserId();
+            int pageSize = 6; // 每頁顯示的資金池數量
+            var query = _context.FundPools
+                .Where(f => f.UserId == userId);
+            int totalCount = await query.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-            var fundPools = await _context.FundPools
-                .Where(f => f.UserId == userId)
+            var fundPools = await query
+                .Skip((page - 1) * pageSize)  // 跳過前幾筆
+                .Take(pageSize)               // 取幾筆
                 .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
 
             return View(fundPools);
         }
