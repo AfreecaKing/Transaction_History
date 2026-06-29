@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "新增交易";
+    int fundPoolId = ViewBag.FundPoolId;
+    string fundPoolName = ViewBag.FundPoolName;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>新增交易－@fundPoolName</h2>
+        <a asp-action="Detail"
+           asp-controller="FundPool"
+           asp-route-id="@fundPoolId"
+           class="btn btn-secondary">
+            返回
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="CreateTransaction" asp-controller="FundPool" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="fundPoolId" value="@fundPoolId" />
+
+                @* 交易類型 *@
+                <div class="mb-3">
+                    <label class="form-label">交易類型</label>
+                    <select name="type" class="form-select" id="typeSelect" onchange="toggleFields()">
+                        <option value="0">入金</option>
+                        <option value="1">出金</option>
+                        <option value="2">買入</option>
+                        <option value="3">賣出</option>
+                    </select>
+                </div>
+
+                @* 交易時間 *@
+                <div class="mb-3">
+                    <label class="form-label">交易時間</label>
+                    <input type="date"
+                           name="transactionTime"
+                           class="form-control"
+                           value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                           required />
+                </div>
+
+                @* 入金出金欄位 *@
+                <div id="amountFields">
+                    <div class="mb-3">
+                        <label class="form-label">金額</label>
+                        <div class="input-group">
+                            <span class="input-group-text">NT$</span>
+                            <input type="number"
+                                   name="amount"
+                                   class="form-control"
+                                   min="0"
+                                   step="1" />
+                        </div>
+                    </div>
+                </div>
+
+                @* 買入賣出欄位 *@
+                <div id="stockFields" style="display:none">
+                    <div class="mb-3">
+                        <label class="form-label">股票代號</label>
+                        <input type="text"
+                               name="stockCode"
+                               class="form-control"
+                               placeholder="例如：2330" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">每股金額</label>
+                        <div class="input-group">
+                            <span class="input-group-text">NT$</span>
+                            <input type="number"
+                                   name="pricePerShare"
+                                   class="form-control"
+                                   min="0"
+                                   step="0.01" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">股數</label>
+                        <input type="number"
+                               name="shares"
+                               class="form-control"
+                               min="0" />
+                    </div>
+
+                    @* 總金額自動計算 *@
+                    <div class="mb-3">
+                        <label class="form-label text-muted">總金額（自動計算）</label>
+                        <div class="input-group">
+                            <span class="input-group-text">NT$</span>
+                            <input type="text"
+                                   id="totalAmount"
+                                   class="form-control"
+                                   readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">新增</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleFields() {
+        const type = document.getElementById("typeSelect").value;
+        const amountFields = document.getElementById("amountFields");
+        const stockFields = document.getElementById("stockFields");
+
+        if (type === "2" || type === "3") {
+            amountFields.style.display = "none";
+            stockFields.style.display = "block";
+        } else {
+            amountFields.style.display = "block";
+            stockFields.style.display = "none";
+        }
+    }
+
+    // 自動計算總金額
+    document.addEventListener("input", function () {
+        const price = parseFloat(document.querySelector("[name='pricePerShare']").value) || 0;
+        const shares = parseFloat(document.querySelector("[name='shares']").value) || 0;
+        document.getElementById("totalAmount").value = (price * shares).toLocaleString();
+    });
+</script>

@@ -64,5 +64,68 @@ namespace WebApplication1.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Detail(int id)
+        {
+            int userId = GetUserId();
+
+            // 找到這個資金池（確認是自己的）
+            var fundPool = await _context.FundPools
+                .Include(f => f.Transactions)  // 一起把交易紀錄撈出來
+                .FirstOrDefaultAsync(f => f.FundPoolId == id && f.UserId == userId);
+
+            if (fundPool == null) return NotFound();
+
+            return View(fundPool);
+        }
+
+        public async Task<IActionResult> CreateTransaction(int id)
+        {
+            // 確認資金池存在且是自己的
+            int userId = GetUserId();
+            var fundPool = await _context.FundPools
+                .FirstOrDefaultAsync(f => f.FundPoolId == id && f.UserId == userId);
+
+            if (fundPool == null) return NotFound();
+
+            ViewBag.FundPoolId = id;
+            ViewBag.FundPoolName = fundPool.PoolName;
+            return View();
+        }
+
+        // 處理新增交易 (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTransaction(
+            int fundPoolId,
+            TransactionType type,
+            DateTime transactionTime,
+            decimal? amount,
+            string? stockCode,
+            int? shares,
+            decimal? pricePerShare)
+        {
+            int userId = GetUserId();
+            var fundPool = await _context.FundPools
+                .FirstOrDefaultAsync(f => f.FundPoolId == fundPoolId && f.UserId == userId);
+
+            if (fundPool == null) return NotFound();
+
+            var transaction = new FundTransaction
+            {
+                FundPoolId = fundPoolId,
+                FundPool = fundPool,
+                Type = type,
+                TransactionTime = transactionTime,
+                Amount = amount,
+                StockCode = stockCode,
+                Shares = shares,
+                PricePerShare = pricePerShare
+            };
+
+            _context.FundTransactions.Add(transaction);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Detail), new { id = fundPoolId });
+        }
     }
 }

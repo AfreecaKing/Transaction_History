@@ -24,5 +24,5 @@ public class FundPool
     public DateTime CreateTime { get; set; } = DateTime.Now;
 
     // 一個資金池有很多交易紀錄
-    //public ICollection<FundTransaction> Transactions { get; set; } = new List<FundTransaction>();
+    public ICollection<FundTransaction> Transactions { get; set; } = new List<FundTransaction>();
 }
