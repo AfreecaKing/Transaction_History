@@ -1,11 +1,13 @@
 ﻿@model FundPool
 @{
     ViewData["Title"] = Model.PoolName;
+    var transactions = (List<FundTransaction>)ViewBag.Transactions;
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
 }
 
 <div class="container mt-4">
 
-    @* 標題列 *@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>@Model.PoolName</h2>
         <a asp-action="Index" asp-controller="FundPool" class="btn btn-secondary">
@@ -13,7 +15,6 @@
         </a>
     </div>
 
-    @* 資金池資訊 *@
     <div class="card mb-4">
         <div class="card-body">
             <p>目前市值：NT$ @Model.CurrentValue.ToString("N0")</p>
@@ -21,7 +22,6 @@
         </div>
     </div>
 
-    @* 交易紀錄標題列 *@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>交易紀錄</h4>
         <a asp-action="Create"
@@ -32,76 +32,118 @@
         </a>
     </div>
 
-    @* 交易紀錄列表 *@
-    @if (Model.Transactions.Any())
+    @if (transactions.Any())
     {
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>時間</th>
-                    <th>類型</th>
-                    <th>股票代號</th>
-                    <th>每股金額</th>
-                    <th>股數</th>
-                    <th>金額／總金額</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var t in Model.Transactions.OrderByDescending(t => t.TransactionTime))
-                {
-                    <tr>
-                        <td>@t.TransactionTime.ToString("yyyy/MM/dd")</td>
-                        <td>
-                            @switch (t.Type)
-                            {
-                                case TransactionType.入金:
-                                case TransactionType.買入:
-                                    <span class="badge bg-success">@t.Type</span>
-                                    break;
-                                case TransactionType.出金:
-                                case TransactionType.賣出:
-                                    <span class="badge bg-danger">@t.Type</span>
-                                    break;
-                            }
-                        </td>
-                        <td>@(t.StockCode ?? "-")</td>
-                        <td>@(t.PricePerShare.HasValue ? $"NT$ {t.PricePerShare:N0}" : "-")</td>
-                        <td>@(t.Shares.HasValue? t.Shares.ToString() : "-")</td>
-                        <td>
-                            @if (t.Amount.HasValue)
-                            {
-                                @($"NT$ {t.Amount:N0}")
-                            }
-                            else if (t.PricePerShare.HasValue && t.Shares.HasValue)
-                            {
-                                @($"NT$ {(t.PricePerShare * t.Shares):N0}")
-                            }
-                        </td>
-                        <td>
-                            @* 編輯 *@
-                            <a asp-action="Edit"
-                               asp-controller="FundTransaction"
-                               asp-route-id="@t.TransactionId"
-                               class="btn btn-sm btn-outline-secondary">
-                                編輯
+        <div class="d-flex flex-column" style="min-height: 600px">
+
+            <div class="flex-grow-1">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>時間</th>
+                            <th>類型</th>
+                            <th>股票代號</th>
+                            <th>每股金額</th>
+                            <th>股數</th>
+                            <th>金額／總金額</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in transactions)
+                        {
+                            <tr>
+                                <td>@t.TransactionTime.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    @switch (t.Type)
+                                    {
+                                        case TransactionType.入金:
+                                        case TransactionType.買入:
+                                            <span class="badge bg-success">@t.Type</span>
+                                            break;
+                                        case TransactionType.出金:
+                                        case TransactionType.賣出:
+                                            <span class="badge bg-danger">@t.Type</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>@(t.StockCode ?? "-")</td>
+                                <td>@(t.PricePerShare.HasValue ? $"NT$ {t.PricePerShare:N0}" : "-")</td>
+                                <td>@(t.Shares.HasValue? t.Shares.ToString() : "-")</td>
+                                <td>
+                                    @if (t.Amount.HasValue)
+                                    {
+                                        @($"NT$ {t.Amount:N0}")
+                                    }
+                                    else if (t.PricePerShare.HasValue && t.Shares.HasValue)
+                                    {
+                                        @($"NT$ {(t.PricePerShare * t.Shares):N0}")
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit"
+                                       asp-controller="FundTransaction"
+                                       asp-route-id="@t.TransactionId"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        編輯
+                                    </a>
+                                    <form asp-action="Delete"
+                                          asp-controller="FundTransaction"
+                                          asp-route-id="@t.TransactionId"
+                                          method="post"
+                                          style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('確定刪除？')">
+                                            刪除
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @* pagination 永遠固定在底部 *@
+            @if (totalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Detail"
+                               asp-controller="FundPool"
+                               asp-route-id="@Model.FundPoolId"
+                               asp-route-transactionPage="@(currentPage - 1)">
+                                &laquo;
                             </a>
-                            @* 刪除 *@
-                            <form asp-action="Delete"
-                                  asp-controller="FundTransaction"
-                                  asp-route-id="@t.TransactionId"
-                                  method="post"
-                                  style="display:inline">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('確定刪除？')">
-                                    刪除
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </li>
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="Detail"
+                                   asp-controller="FundPool"
+                                   asp-route-id="@Model.FundPoolId"
+                                   asp-route-transactionPage="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Detail"
+                               asp-controller="FundPool"
+                               asp-route-id="@Model.FundPoolId"
+                               asp-route-transactionPage="@(currentPage + 1)">
+                                &raquo;
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
     }
     else
     {

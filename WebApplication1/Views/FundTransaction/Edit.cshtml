@@ -1,6 +1,7 @@
 ﻿@model FundTransaction
 @{
     ViewData["Title"] = "編輯交易";
+    // 從 Controller 傳來的資金池資訊（用來顯示標題、返回連結）
     int fundPoolId = ViewBag.FundPoolId;
     string fundPoolName = ViewBag.FundPoolName;
 }
@@ -20,11 +21,15 @@
         <div class="card-body">
             <form asp-action="Edit" asp-controller="FundTransaction" method="post">
                 @Html.AntiForgeryToken()
+
+                @* 隱藏欄位：要編輯哪一筆交易，使用者看不到但會一起送出 *@
                 <input type="hidden" name="transactionId" value="@Model.TransactionId" />
 
+                @* 交易類型下拉選單 *@
                 <div class="mb-3">
                     <label class="form-label">交易類型</label>
                     <select name="type" class="form-select" id="typeSelect" onchange="toggleFields()">
+                        @* selected="@(...)" 會根據條件是否為 true 決定要不要預選這個選項 *@
                         <option value="0" selected="@(Model.Type == TransactionType.入金)">入金</option>
                         <option value="1" selected="@(Model.Type == TransactionType.出金)">出金</option>
                         <option value="2" selected="@(Model.Type == TransactionType.買入)">買入</option>
@@ -32,6 +37,19 @@
                     </select>
                 </div>
 
+                @* 交易時間 *@
+                <div class="mb-3">
+                    <label class="form-label">交易時間</label>
+                    <input type="date"
+                           name="transactionTime"
+                           class="form-control"
+                           value="@Model.TransactionTime.ToString("yyyy-MM-dd")"
+                           required />
+                </div>
+
+                @* 入金/出金欄位區塊
+                   如果目前類型是「買入」或「賣出」，一開始就先隱藏（display:none）
+                   因為入金出金不需要金額以外的欄位 *@
                 <div id="amountFields" style="@(Model.Type == TransactionType.買入 || Model.Type == TransactionType.賣出 ? "display:none" : "")">
                     <div class="mb-3">
                         <label class="form-label">金額</label>
@@ -46,6 +64,9 @@
                     </div>
                 </div>
 
+                @* 買入/賣出欄位區塊
+                   如果目前類型「不是」買入或賣出，一開始就先隱藏
+                   因為入金出金不需要股票相關欄位 *@
                 <div id="stockFields" style="@(Model.Type == TransactionType.買入 || Model.Type == TransactionType.賣出 ? "" : "display:none")">
                     <div class="mb-3">
                         <label class="form-label">股票代號</label>
@@ -83,14 +104,22 @@
 </div>
 
 <script>
+    // 當使用者「切換」交易類型下拉選單時，這個函式會被觸發（見上面的 onchange="toggleFields()"）
+    // 用來動態切換要顯示哪一組欄位
     function toggleFields() {
+        // 取得目前下拉選單選到的值（字串形式，例如 "0"、"1"、"2"、"3"）
         const type = document.getElementById("typeSelect").value;
+
+        // 取得兩個區塊的 DOM 元素，準備控制它們的顯示/隱藏
         const amountFields = document.getElementById("amountFields");
         const stockFields = document.getElementById("stockFields");
+
+        // "2" = 買入, "3" = 賣出 → 要顯示股票欄位，隱藏金額欄位
         if (type === "2" || type === "3") {
-            amountFields.style.display = "none";
-            stockFields.style.display = "block";
+            amountFields.style.display = "none";   // 隱藏「金額」欄位
+            stockFields.style.display = "block";   // 顯示「股票代號/每股金額/股數」欄位
         } else {
+            // "0" = 入金, "1" = 出金 → 要顯示金額欄位，隱藏股票欄位
             amountFields.style.display = "block";
             stockFields.style.display = "none";
         }
