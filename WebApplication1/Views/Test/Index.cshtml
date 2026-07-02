@@ -1,0 +1,21 @@
+﻿@*
+    
+*@
+@{
+	ViewData["Title"] = "測試API";
+}
+<div class="container mt-4 justify-content-center">
+    <h2 class="text-center mb-4">測試API</h2>
+
+    <div class="alert alert-light mb-3">
+        <strong>今日股價：</strong>@ViewBag.Today
+    </div>
+
+    <div class="alert alert-light mb-3">
+        <strong>歷史股價：</strong>@ViewBag.History
+    </div>
+
+    <div class="alert alert-light mb-3">
+        <strong>批次股價：</strong>@ViewBag.Batch
+    </div>
+</div>

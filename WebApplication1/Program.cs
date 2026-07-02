@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models;
+using WebApplication1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddAuthentication("Cookies").AddCookie("Cookies", options =>
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddHttpClient<StockService>(); // 註冊 StockService，讓它可以使用 HttpClient 來呼叫 API
 
 // ====================================================================
 var app = builder.Build();

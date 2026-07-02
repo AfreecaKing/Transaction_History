@@ -1,0 +1,100 @@
+﻿@model StockSimulateViewModel
+@{
+    ViewData["Title"] = "股票試算";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>股票試算－@Model.PoolName</h2>
+        <a asp-action="Detail"
+           asp-controller="FundPool"
+           asp-route-id="@Model.FundPoolId"
+           class="btn btn-secondary">
+            返回
+        </a>
+    </div>
+
+    @* 輸入表單 *@
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Index" asp-controller="Simulate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="fundPoolId" value="@Model.FundPoolId" />
+
+                <div class="row align-items-end g-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">股票代號</label>
+                        <input type="text"
+                               name="stockCode"
+                               class="form-control"
+                               value="@Model.StockCode"
+                               placeholder="台股輸入數字（0050），美股輸入英文（AAPL）"
+                               required />
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">試算</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* 錯誤訊息 *@
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    @* 試算結果 *@
+    @if (Model.TotalInvested > 0)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">
+                    @Model.StockCode 試算結果
+                    <small class="text-muted fs-6 ms-2">（股價日期：@Model.TodayDate）</small>
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <div class="text-muted small">總入金</div>
+                            <div class="fw-bold">NT$ @Model.TotalInvested.ToString("N0")</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <div class="text-muted small">目前持股</div>
+                            <div class="fw-bold">@Model.TotalShares 股</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <div class="text-muted small">今日股價</div>
+                            <div class="fw-bold">NT$ @Model.TodayPrice.ToString("N2")</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="border rounded p-3 text-center">
+                            <div class="text-muted small">目前市值</div>
+                            <div class="fw-bold">NT$ @Model.CurrentValue.ToString("N0")</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                @* 總報酬率，正負用不同顏色 *@
+                <div class="text-center">
+                    <div class="text-muted mb-1">總報酬率</div>
+                    <div class="display-4 fw-bold @(Model.ReturnRate >= 0 ? "text-success" : "text-danger")">
+                        @(Model.ReturnRate >= 0 ? "+" : "")@Model.ReturnRate %
+                    </div>
+                    <div class="mt-2 @(Model.TotalReturn >= 0 ? "text-success" : "text-danger")">
+                        @(Model.TotalReturn >= 0 ? "+" : "")NT$ @Model.TotalReturn.ToString("N0")
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

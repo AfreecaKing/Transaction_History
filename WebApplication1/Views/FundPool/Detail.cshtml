@@ -4,6 +4,8 @@
     var transactions = (List<FundTransaction>)ViewBag.Transactions;
     int currentPage = ViewBag.CurrentPage;
     int totalPages = ViewBag.TotalPages;
+    decimal cashBalance = ViewBag.CashBalance;
+    decimal totalInvested = ViewBag.TotalInvested;
 }
 
 <div class="container mt-4">
@@ -15,10 +17,63 @@
         </a>
     </div>
 
+    @* 資金池資訊卡片 *@
+    @* 資金池資訊卡片 *@
     <div class="card mb-4">
         <div class="card-body">
-            <p>目前市值：NT$ @Model.CurrentValue.ToString("N0")</p>
-            <p>建立時間：@Model.CreateTime.ToString("yyyy/MM/dd")</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <p class="mb-0">現金餘額：<span id="cashBalanceDisplay">計算中...</span></p>
+                <a asp-action="Index"
+                   asp-controller="Validation"
+                   asp-route-fundPoolId="@Model.FundPoolId"
+                   asp-route-redirectTo="Simulate"
+                   class="btn btn-outline-success btn-sm">
+                    績效對比
+                </a>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <p class="mb-0">持股市值：<span id="totalMarketValue">計算中...</span></p>
+                <a asp-action="Index"
+                   asp-controller="Validation"
+                   asp-route-fundPoolId="@Model.FundPoolId"
+                   asp-route-redirectTo="Return"
+                   class="btn btn-outline-primary btn-sm">
+                    計算報酬
+                </a>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <p class="mb-0">總資產：<span id="totalAssets">計算中...</span></p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <p class="mb-0">
+                    報酬率：
+                    <span id="returnRate" class="fw-bold">計算中...</span>
+                    （<span id="totalReturn">計算中...</span>）
+                </p>
+            </div>
+            <div class="mt-2">
+                <p class="mb-0 text-muted small">股價日期：<span id="priceDate"></span></p>
+            </div>
+
+            @* 持股明細 *@
+            <div id="holdingsSection" style="display:none" class="mt-3">
+                <hr>
+                <p class="mb-2 fw-bold">持股明細</p>
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>股票</th>
+                            <th>股數</th>
+                            <th>今日股價</th>
+                            <th>市值</th>
+                        </tr>
+                    </thead>
+                    <tbody id="holdingsBody"></tbody>
+                </table>
+            </div>
+
+            @* 錯誤訊息 *@
+            <div id="returnError" style="display:none" class="alert alert-danger mt-3 mb-0"></div>
         </div>
     </div>
 
@@ -35,7 +90,6 @@
     @if (transactions.Any())
     {
         <div class="d-flex flex-column" style="min-height: 600px">
-
             <div class="flex-grow-1">
                 <table class="table table-hover">
                     <thead>
@@ -105,7 +159,6 @@
                 </table>
             </div>
 
-            @* pagination 永遠固定在底部 *@
             @if (totalPages > 1)
             {
                 <nav class="mt-4">
@@ -153,3 +206,66 @@
     }
 
 </div>
+
+<script>
+    // 頁面載入完成後自動執行
+    document.addEventListener("DOMContentLoaded", function () {
+        calculateReturn(@Model.FundPoolId);
+    });
+
+    async function calculateReturn(fundPoolId) {
+        try {
+            const response = await fetch(`/Return/Calculate?fundPoolId=${fundPoolId}`);
+            if (!response.ok) throw new Error("API 回應錯誤");
+
+            const data = await response.json();
+
+            document.getElementById("cashBalanceDisplay").textContent =
+                `NT$ ${data.cashBalance.toLocaleString("zh-TW", { maximumFractionDigits: 0 })}`;
+
+            document.getElementById("totalMarketValue").textContent =
+                `NT$ ${data.totalMarketValue.toLocaleString("zh-TW", { maximumFractionDigits: 0 })}`;
+
+            document.getElementById("totalAssets").textContent =
+                `NT$ ${data.totalAssets.toLocaleString("zh-TW", { maximumFractionDigits: 0 })}`;
+
+            const returnRateEl = document.getElementById("returnRate");
+            returnRateEl.textContent = `${data.returnRate >= 0 ? "+" : ""}${data.returnRate}%`;
+            returnRateEl.className = `fw-bold ${data.returnRate >= 0 ? "text-success" : "text-danger"}`;
+
+            const totalReturnEl = document.getElementById("totalReturn");
+            totalReturnEl.textContent =
+                `${data.totalReturn >= 0 ? "+" : ""}NT$ ${Math.abs(data.totalReturn).toLocaleString("zh-TW", { maximumFractionDigits: 0 })}`;
+            totalReturnEl.className = data.totalReturn >= 0 ? "text-success" : "text-danger";
+
+            document.getElementById("priceDate").textContent = data.priceDate;
+
+            if (data.holdings && data.holdings.length > 0) {
+                const tbody = document.getElementById("holdingsBody");
+                tbody.innerHTML = "";
+                data.holdings.forEach(h => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${h.stockCode}</td>
+                            <td>${h.shares} 股</td>
+                            <td>NT$ ${h.todayPrice.toLocaleString("zh-TW", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>NT$ ${h.marketValue.toLocaleString("zh-TW", { maximumFractionDigits: 0 })}</td>
+                        </tr>`;
+                });
+                document.getElementById("holdingsSection").style.display = "block";
+            }
+
+        } catch (error) {
+            document.getElementById("returnError").style.display = "block";
+            document.getElementById("returnError").textContent = `計算失敗：${error.message}`;
+
+            // 計算失敗時顯示靜態的現金餘額
+            document.getElementById("cashBalanceDisplay").textContent =
+                `NT$ @cashBalance.ToString("N0")`;
+            document.getElementById("totalMarketValue").textContent = "-";
+            document.getElementById("totalAssets").textContent = "-";
+            document.getElementById("returnRate").textContent = "-";
+            document.getElementById("totalReturn").textContent = "-";
+        }
+    }
+</script>

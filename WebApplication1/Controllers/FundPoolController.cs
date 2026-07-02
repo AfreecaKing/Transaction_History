@@ -58,19 +58,61 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index)); // 新增完成後重新導向到資金池列表頁面
         }
 
-        public async Task<IActionResult> Detail(int id, int transactionPage = 1)// 顯示資金池交易紀錄 (GET)
+        public async Task<IActionResult> Detail(int id, int transactionPage = 1)
         {
             int userId = GetUserId();
 
-            // 先確認資金池存在且是自己的（不含交易紀錄）
             var fundPool = await _context.FundPools
                 .FirstOrDefaultAsync(f => f.FundPoolId == id && f.UserId == userId);
 
             if (fundPool == null) return NotFound();
 
-            int pageSize = 10;
+            // 計算現金餘額和市值
+            var allTransactions = await _context.FundTransactions
+                .Where(t => t.FundPoolId == id)
+                .OrderBy(t => t.TransactionTime)
+                .ToListAsync();
 
-            // 交易紀錄另外查，並分頁
+            decimal cash = 0;
+            decimal totalInvested = 0;
+            var stocks = new Dictionary<string, int>();
+
+            foreach (var t in allTransactions)
+            {
+                switch (t.Type)
+                {
+                    case TransactionType.入金:
+                        cash += t.Amount ?? 0;
+                        totalInvested += t.Amount ?? 0;
+                        break;
+                    case TransactionType.出金:
+                        cash -= t.Amount ?? 0;
+                        break;
+                    case TransactionType.買入:
+                        if (t.StockCode != null && t.Shares.HasValue && t.PricePerShare.HasValue)
+                        {
+                            cash -= t.PricePerShare.Value * t.Shares.Value;
+                            if (!stocks.ContainsKey(t.StockCode))
+                                stocks[t.StockCode] = 0;
+                            stocks[t.StockCode] += t.Shares.Value;
+                        }
+                        break;
+                    case TransactionType.賣出:
+                        if (t.StockCode != null && t.Shares.HasValue && t.PricePerShare.HasValue)
+                        {
+                            cash += t.PricePerShare.Value * t.Shares.Value;
+                            if (stocks.ContainsKey(t.StockCode))
+                                stocks[t.StockCode] -= t.Shares.Value;
+                        }
+                        break;
+                }
+            }
+
+            ViewBag.CashBalance = cash;
+            ViewBag.TotalInvested = totalInvested;
+
+            // 分頁部分不變
+            int pageSize = 10;
             var transactionQuery = _context.FundTransactions
                 .Where(t => t.FundPoolId == id)
                 .OrderByDescending(t => t.TransactionTime);
