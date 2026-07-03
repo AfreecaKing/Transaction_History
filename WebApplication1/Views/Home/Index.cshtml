@@ -2,21 +2,33 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <div class="hero-content">
-        <h1>投資報酬率分析</h1>
-        @if(User.Identity != null && User.Identity.IsAuthenticated)
-        {
-            <a class="btn btn-danger btn-lg" asp-controller="FundPool" asp-action="Index">
-                開始分析
-            </a>
-        }
-        else
-        {
-            <a class="btn btn-danger btn-lg" asp-controller="Account" asp-action="Login">
-                開始分析
-            </a>
-		}
+<div class="text-center ">
+    <div class="hero-wrap">
+        <div class="hero-content ">
+            <h1 class="mb-3" style="font-size: 2.2rem; font-weight: 600;">你知道你的投資，真正賺了多少嗎？</h1>
+            <p class="text-muted mb-2" style="font-size: 1.05rem; max-width: 480px;">
+                很多人買了股票、進出了幾次，<br>
+                卻從來不知道自己的真實報酬率是多少。
+            </p>
+            <p class="text-muted mb-4" style="font-size: 1.05rem; max-width: 480px;">
+                ROIC 幫你把每一筆交易記錄下來，<br>
+                自動計算報酬，還能對比「如果當初買 0050」的差距。
+            </p>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-danger btn-lg" asp-controller="FundPool" asp-action="Index">開始分析</a>
+            }
+            else
+            {
+                <a class="btn btn-danger btn-lg" asp-controller="Account" asp-action="Login">開始分析</a>
+            }
+        </div>
 
+        <div class="hero-visual">
+            <svg class="hero-line" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                <polyline points="0,340 80,300 140,320 210,240 280,270 350,160 420,190 500,90 600,40"
+                          fill="none" stroke="#C4453C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
     </div>
 </div>

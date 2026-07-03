@@ -12,7 +12,7 @@
 <body>
     <header>
         
-        <nav class="navbar navbar-expand-md bg-body-tertiary ">
+        <nav class="navbar navbar-expand bg-body-tertiary ">
             <div class="container-fluid">
                 <a class="navbar-brand text-dark " asp-controller="Home" asp-action="Index">
                     <img src="@Url.Content("~/Pic/Logo.png")" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
@@ -63,6 +63,7 @@
             @RenderBody()
         </main>
     </div>
+   
     
    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -71,3 +72,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

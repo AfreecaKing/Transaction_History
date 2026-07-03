@@ -17,6 +17,283 @@ html {
   min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
+:root {
+    --ink: #0B1622;
+    --panel: #12283A;
+    --grid-line: rgba(255, 255, 255, 0.05);
+    --gold: #D4A24C;
+    --gain: #C4453C;
+    --text-main: #EDEDE5;
+    --text-muted: #9FB0C0;
 }
+
+body {
+    background-color: var(--ink);
+    background-image: radial-gradient(circle at 50% -10%, rgba(212, 162, 76, 0.14), transparent 55%), repeating-linear-gradient(0deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 48px), repeating-linear-gradient(90deg, var(--grid-line) 0px, var(--grid-line) 1px, transparent 1px, transparent 48px);
+    background-attachment: fixed;
+    color: var(--text-main);
+    min-height: 100vh;
+}
+
+/* Navbar 改成融入深色背景 */
+.navbar.bg-body-tertiary {
+    background-color: rgba(11, 22, 34, 0.75) !important;
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--grid-line);
+}
+
+.navbar-brand,
+.nav-link,
+.navbar-toggler-icon {
+    color: var(--text-main) !important;
+}
+
+.btn-outline-dark {
+    color: var(--text-main) !important;
+    border-color: var(--text-muted) !important;
+}
+
+    .btn-outline-dark:hover {
+        background-color: var(--gold) !important;
+        border-color: var(--gold) !important;
+        color: var(--ink) !important;
+    }
+
+/* 主色按鈕改用金色，紅色留給「報酬/漲」語意 */
+.btn-danger {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(212, 162, 76, 0.25);
+}
+.btn-danger:hover {
+        background-color: #e6b662;
+        border-color: #e6b662;
+        color: var(--ink);
+
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.hero-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 4rem 1rem;
+    text-align: left;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.hero-content {
+    flex: 1 1 420px;
+}
+
+.hero-visual {
+    flex: 1 1 420px;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-line {
+    width: 100%;
+    max-width: 480px;
+    opacity: 0.9;
+}
+.hero-line polyline {
+        stroke-dasharray: 1400;
+        stroke-dashoffset: 1400;
+        animation: draw-line 2.2s ease-out forwards;
+    }
+/* 卡片 */
+.card {
+    background-color: var(--panel);
+    border: 1px solid var(--grid-line);
+    color: var(--text-main);
+}
+
+.card-footer {
+    background-color: var(--panel) !important;
+    border-top: 1px solid var(--grid-line);
+}
+
+/* 表格 */
+.table {
+    color: var(--text-main);
+    border-color: var(--grid-line);
+}
+
+    .table > :not(caption) > * > * {
+        background-color: transparent;
+        color: var(--text-main);
+        border-bottom-color: var(--grid-line);
+    }
+
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--text-main);
+}
+
+.table thead th {
+    color: var(--text-muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--grid-line);
+}
+
+/* 按鈕 */
+.btn-primary {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 600;
+}
+
+    .btn-primary:hover {
+        background-color: #e6b662;
+        border-color: #e6b662;
+        color: var(--ink);
+    }
+
+.btn-secondary {
+    background-color: transparent;
+    border-color: var(--text-muted);
+    color: var(--text-main);
+}
+
+    .btn-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-color: var(--text-main);
+    }
+
+.btn-outline-primary {
+    color: var(--gold);
+    border-color: var(--gold);
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--gold);
+        color: var(--ink);
+    }
+
+.btn-outline-secondary {
+    color: var(--text-muted);
+    border-color: var(--text-muted);
+}
+
+    .btn-outline-secondary:hover {
+        background-color: var(--text-muted);
+        color: var(--ink);
+    }
+
+.btn-outline-danger {
+    color: #e2726a;
+    border-color: #e2726a;
+}
+
+    .btn-outline-danger:hover {
+        background-color: #e2726a;
+        color: var(--ink);
+    }
+
+.btn-outline-success {
+    color: #4caf7d;
+    border-color: #4caf7d;
+}
+
+    .btn-outline-success:hover {
+        background-color: #4caf7d;
+        color: var(--ink);
+    }
+
+/* 表單 */
+.form-control {
+    background-color: var(--ink);
+    border: 1px solid var(--grid-line);
+    color: var(--text-main);
+}
+
+    .form-control:focus {
+        background-color: var(--ink);
+        border-color: var(--gold);
+        color: var(--text-main);
+        box-shadow: 0 0 0 0.2rem rgba(212, 162, 76, 0.2);
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted);
+    }
+
+.form-label {
+    color: var(--text-main);
+}
+
+/* 錯誤訊息 */
+.alert-danger {
+    background-color: rgba(196, 69, 60, 0.15);
+    border-color: rgba(196, 69, 60, 0.4);
+    color: #f2a29c;
+}
+
+/* 分頁 */
+.pagination .page-link {
+    background-color: var(--panel);
+    border-color: var(--grid-line);
+    color: var(--text-main);
+}
+
+    .pagination .page-link:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-main);
+    }
+
+.pagination .page-item.active .page-link {
+    background-color: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: transparent;
+    color: var(--text-muted);
+    border-color: var(--grid-line);
+}
+
+h2, h4, h5 {
+    color: var(--text-main);
+}
+@keyframes draw-line {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-line polyline {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+}
+
+/* 手機版改回上下堆疊 */
+@media (max-width: 768px) {
+    .hero-wrap {
+        flex-direction: column;
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .hero-content {
+        text-align: center;
+    }
+
+    .hero-visual {
+        order: -1;
+    }
+}
+
+
+

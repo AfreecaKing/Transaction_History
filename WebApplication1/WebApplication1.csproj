@@ -14,7 +14,7 @@
   <ItemGroup>
     <None Include="bundleconfig.json" />
     <None Include="compilerconfig.json" />
-    <None Include="wwwroot\Pic\Logo.png" />
+    <None Include="wwwroot\images\Logo.png" />
   </ItemGroup>
 
   <ItemGroup>
