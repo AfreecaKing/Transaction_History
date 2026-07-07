@@ -11,10 +11,7 @@
     <Content Remove="compilerconfig.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include=".dockerignore" />
-    <Compile Include="Dockerfile" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <None Include="bundleconfig.json" />
