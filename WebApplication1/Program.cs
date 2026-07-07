@@ -31,6 +31,8 @@ builder.Services.AddSession();
 // StockService
 builder.Services.AddHttpClient<StockService>(client =>
 {
+    var stockApiBaseUrl = builder.Configuration["StockApi:BaseUrl"];
+    client.BaseAddress = new Uri(stockApiBaseUrl!);
     client.Timeout = TimeSpan.FromSeconds(60);
 });
 
