@@ -1,21 +1,37 @@
-﻿@*
-    
-*@
+﻿@model IEnumerable<User>
 @{
-	ViewData["Title"] = "測試API";
+	ViewData["Title"] = "測試區域";
 }
 <div class="container mt-4 justify-content-center">
-    <h2 class="text-center mb-4">測試API</h2>
+    <table class="table table-striped-columns">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Password</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <th scope="row">@user.Id</th>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@user.Password</td>
+                </tr>
+			}
+        </tbody>
+    </table>
+    @if(User.Identities != null && User.Identity.IsAuthenticated)
+    {
+        <p>歡迎，@User.Identity.Name！</p>
+    }
+    else
+    {
+        <p>您尚未登入。</p>
+	}
 
-    <div class="alert alert-light mb-3">
-        <strong>今日股價：</strong>@ViewBag.Today
-    </div>
 
-    <div class="alert alert-light mb-3">
-        <strong>歷史股價：</strong>@ViewBag.History
-    </div>
-
-    <div class="alert alert-light mb-3">
-        <strong>批次股價：</strong>@ViewBag.Batch
-    </div>
 </div>

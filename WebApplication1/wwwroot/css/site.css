@@ -121,7 +121,9 @@ body {
     border-top: 1px solid var(--grid-line);
 }
 
+
 /* ªí®æ */
+
 .table {
     color: var(--text-main);
     border-color: var(--grid-line);

@@ -39,8 +39,12 @@ builder.Services.AddHttpClient<StockService>(client =>
 var app = builder.Build();
 
 // PORT 設定（Railway 用）
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Add($"http://0.0.0.0:{port}");
+// 只有在 Railway 上才用環境變數的 PORT
+if (!app.Environment.IsDevelopment())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Urls.Add($"http://0.0.0.0:{port}");
+}
 
 // 錯誤處理
 if (!app.Environment.IsDevelopment())

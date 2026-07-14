@@ -22,6 +22,10 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Register(User user)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
             // 用Name檢查是否已經有相同的使用者名稱存在資料庫中
             var isExist = _context.Users.Any(u => u.Name == user.Name);
             if (isExist)

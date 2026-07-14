@@ -11,13 +11,14 @@
 </head>
 <body>
     <header>
-        
+        <!--導覽列-->
         <nav class="navbar navbar-expand bg-body-tertiary ">
             <div class="container-fluid">
                 <a class="navbar-brand text-dark " asp-controller="Home" asp-action="Index">
                     <img src="@Url.Content("~/images/Logo.png")" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
                     ROIC
                 </a>
+                <!--手機 ☰按鈕-->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -28,8 +29,10 @@
                 *@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ">
+                        <!--User cookie 驗證-->
                         @if (User.Identity!=null && User.Identity.IsAuthenticated)
                         {
+                            <!--下拉選單-->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-dark" href="#"  role="button" data-bs-toggle="dropdown" aria-expanded="false">
 									<i class="fa-solid fa-user me-1"></i> @User.Identity.Name

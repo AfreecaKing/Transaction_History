@@ -99,9 +99,11 @@ dotnet run
 ```
 Transaction_History/
 ├── WebApplication1/        # ASP.NET Core MVC 主專案
-│   ├── Controllers/        # FundPool、FundTransaction、Simulate、Return、Validation
+│   ├── Controllers/
+|   |   ├──AccountController # Login、Register、Logout       
 │   ├── Models/             # User、FundPool、FundTransaction、ViewModel
 │   ├── Views/              # Razor 頁面
+|   |   ├──Account            # 登入與註冊頁面
 │   ├── Services/           # StockService（呼叫 Python API）
 │   └── Migrations/         # EF Core Migration
 └── StockApi/               # Python FastAPI 股價服務
