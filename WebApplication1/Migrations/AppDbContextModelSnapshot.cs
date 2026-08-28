@@ -108,6 +108,25 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("WebApplication1.Models.StockPrice", b =>
+                {
+                    b.Property<int>("StockPriceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StockPriceId"));
+
+                    b.Property<decimal>("Close").HasColumnType("decimal(65,30)");
+                    b.Property<DateOnly>("PriceDate").HasColumnType("date");
+                    b.Property<string>("StockCode").IsRequired().HasMaxLength(20).HasColumnType("varchar(20)");
+                    b.Property<string>("Ticker").IsRequired().HasMaxLength(30).HasColumnType("varchar(30)");
+                    b.Property<DateTime>("UpdatedAt").HasColumnType("datetime(6)");
+
+                    b.HasKey("StockPriceId");
+                    b.HasIndex("StockCode", "PriceDate").IsUnique();
+                    b.ToTable("stockprices");
+                });
+
             modelBuilder.Entity("FundPool", b =>
                 {
                     b.HasOne("WebApplication1.Models.User", "User")

@@ -137,13 +137,13 @@ namespace WebApplication1.Services
             });
         }
         // 一次取得多支股票今日股價
-        public async Task<TodayBatchResult?> GetTodayBatchPricesAsync(List<string> stockCodes)
+        public async Task<TodayBatchResult?> GetTodayBatchPricesAsync(List<string> stockCodes, CancellationToken cancellationToken = default)
         {
             var codesParam = string.Join(",", stockCodes);
-            var response = await _httpClient.GetAsync($"{_baseUrl}/price/today/batch?stock_codes={codesParam}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/price/today/batch?stock_codes={Uri.EscapeDataString(codesParam)}", cancellationToken);
             if (!response.IsSuccessStatusCode) return null;
 
-            var json = await response.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonSerializer.Deserialize<TodayBatchResult>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true

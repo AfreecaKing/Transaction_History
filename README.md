@@ -104,6 +104,11 @@ Transaction_History/
 │   ├── Models/             # User、FundPool、FundTransaction、ViewModel
 │   ├── Views/              # Razor 頁面
 |   |   ├──Account            # 登入與註冊頁面
+|   |   ├──FoundPool          # 資金池頁面
+|   |      ├──Index             #資金池管理(主頁)
+           ├──CreatePool        #新增資金池頁面
+           ├──Detail            #查看詳情頁面(交易紀錄) 
+        ├──FundTransaction    # 交易紀錄(新增、編輯)         
 │   ├── Services/           # StockService（呼叫 Python API）
 │   └── Migrations/         # EF Core Migration
 └── StockApi/               # Python FastAPI 股價服務

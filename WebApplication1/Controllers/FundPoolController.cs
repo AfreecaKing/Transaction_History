@@ -2,15 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using WebApplication1.Models;
+using WebApplication1.Services;
 namespace WebApplication1.Controllers
 {
     public class FundPoolController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly PortfolioReturnService _returnService;
 
-        public FundPoolController(AppDbContext context)
+        public FundPoolController(AppDbContext context, PortfolioReturnService returnService)
         {
             _context = context;
+            _returnService = returnService;
         }
 
         private int GetUserId() //取得存在cookie中的UserId
@@ -67,49 +70,7 @@ namespace WebApplication1.Controllers
 
             if (fundPool == null) return NotFound();
 
-            // 計算現金餘額和市值
-            var allTransactions = await _context.FundTransactions
-                .Where(t => t.FundPoolId == id)
-                .OrderBy(t => t.TransactionTime)
-                .ToListAsync();
-
-            decimal cash = 0;
-            decimal totalInvested = 0;
-            var stocks = new Dictionary<string, int>();
-
-            foreach (var t in allTransactions)
-            {
-                switch (t.Type)
-                {
-                    case TransactionType.入金:
-                        cash += t.Amount ?? 0;
-                        totalInvested += t.Amount ?? 0;
-                        break;
-                    case TransactionType.出金:
-                        cash -= t.Amount ?? 0;
-                        break;
-                    case TransactionType.買入:
-                        if (t.StockCode != null && t.Shares.HasValue && t.PricePerShare.HasValue)
-                        {
-                            cash -= t.PricePerShare.Value * t.Shares.Value;
-                            if (!stocks.ContainsKey(t.StockCode))
-                                stocks[t.StockCode] = 0;
-                            stocks[t.StockCode] += t.Shares.Value;
-                        }
-                        break;
-                    case TransactionType.賣出:
-                        if (t.StockCode != null && t.Shares.HasValue && t.PricePerShare.HasValue)
-                        {
-                            cash += t.PricePerShare.Value * t.Shares.Value;
-                            if (stocks.ContainsKey(t.StockCode))
-                                stocks[t.StockCode] -= t.Shares.Value;
-                        }
-                        break;
-                }
-            }
-
-            ViewBag.CashBalance = cash;
-            ViewBag.TotalInvested = totalInvested;
+            ViewBag.Return = await _returnService.CalculateAsync(fundPool, HttpContext.RequestAborted);
 
             // 分頁部分不變
             int pageSize = 10;

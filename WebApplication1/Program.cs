@@ -35,6 +35,7 @@ builder.Services.AddHttpClient<StockService>(client =>
     client.BaseAddress = new Uri(stockApiBaseUrl!);
     client.Timeout = TimeSpan.FromSeconds(60);
 });
+builder.Services.AddScoped<PortfolioReturnService>();
 
 var app = builder.Build();
 

@@ -12,6 +12,7 @@ namespace WebApplication1.Models
         public DbSet<User> Users { get; set; }
         public DbSet<FundPool> FundPools { get; set; }
         public DbSet<FundTransaction> FundTransactions { get; set; }
+        public DbSet<StockPrice> StockPrices { get; set; }
 
         // 手動新增這個覆寫方法，強制指定資料庫內對應的「小寫」資料表名稱
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +25,10 @@ namespace WebApplication1.Models
             // 同理，其他資料表也強制對應小寫
             modelBuilder.Entity<FundPool>().ToTable("fundpools");
             modelBuilder.Entity<FundTransaction>().ToTable("fundtransactions");
+            modelBuilder.Entity<StockPrice>().ToTable("stockprices");
+            modelBuilder.Entity<StockPrice>()
+                .HasIndex(x => new { x.StockCode, x.PriceDate })
+                .IsUnique();
         }
     }
 
