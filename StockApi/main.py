@@ -1,8 +1,15 @@
 from fastapi import FastAPI, HTTPException
 import yfinance as yf
 from datetime import datetime, timedelta
+from pathlib import Path
 
 app = FastAPI()
+
+YFINANCE_CACHE_DIR = Path(__file__).resolve().parent / ".yfinance-cache"
+YFINANCE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+yf.set_tz_cache_location(str(YFINANCE_CACHE_DIR))
+
+ALLOWED_CANDLE_PERIODS = {"1mo", "3mo", "6mo", "1y"}
 
 def get_ticker(stock_code: str) -> str:
     """
@@ -181,6 +188,42 @@ def get_today_batch_price(stock_codes: str):
             })
 
     return {"prices": results}
+
+
+@app.get("/price/candles")
+def get_candles(stock_code: str, period: str = "6mo"):
+    """取得日 K 線 OHLCV 資料。period 支援 1mo、3mo、6mo、1y。"""
+    if period not in ALLOWED_CANDLE_PERIODS:
+        raise HTTPException(status_code=400, detail="不支援的區間")
+
+    code = stock_code.strip()
+    ticker = get_ticker(code)
+
+    try:
+        hist = yf.Ticker(ticker).history(period=period, interval="1d", auto_adjust=False)
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"取得 {ticker} K線失敗：{exc}")
+
+    if hist.empty:
+        raise HTTPException(status_code=404, detail=f"找不到 {ticker} 的K線資料")
+
+    hist = hist.dropna(subset=["Open", "High", "Low", "Close"])
+    candles = []
+    for index, row in hist.iterrows():
+        candles.append({
+            "date": index.strftime("%Y-%m-%d"),
+            "open": round(float(row["Open"]), 2),
+            "high": round(float(row["High"]), 2),
+            "low": round(float(row["Low"]), 2),
+            "close": round(float(row["Close"]), 2),
+            "volume": int(row["Volume"]) if row["Volume"] == row["Volume"] else 0
+        })
+
+    return {
+        "stock_code": code,
+        "ticker": ticker,
+        "candles": candles
+    }
 
 # main.py 最底部加上
 if __name__ == "__main__":

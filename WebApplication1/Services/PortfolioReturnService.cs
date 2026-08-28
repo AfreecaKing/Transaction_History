@@ -92,7 +92,8 @@ public class PortfolioReturnService
             Holdings = holdings,
             PriceDate = newestPriceDate,
             HasCompletePrices = hasCompletePrices,
-            MissingPriceCodes = missingPriceCodes
+            MissingPriceCodes = missingPriceCodes,
+            HoldingStockCodes = activePositions.Select(x => x.Key).ToList()
         };
     }
 

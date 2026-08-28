@@ -117,10 +117,14 @@ namespace WebApplication1.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StockPriceId"));
 
                     b.Property<decimal>("Close").HasColumnType("decimal(65,30)");
+                    b.Property<decimal?>("High").HasColumnType("decimal(65,30)");
+                    b.Property<decimal?>("Low").HasColumnType("decimal(65,30)");
+                    b.Property<decimal?>("Open").HasColumnType("decimal(65,30)");
                     b.Property<DateOnly>("PriceDate").HasColumnType("date");
                     b.Property<string>("StockCode").IsRequired().HasMaxLength(20).HasColumnType("varchar(20)");
                     b.Property<string>("Ticker").IsRequired().HasMaxLength(30).HasColumnType("varchar(30)");
                     b.Property<DateTime>("UpdatedAt").HasColumnType("datetime(6)");
+                    b.Property<long?>("Volume").HasColumnType("bigint");
 
                     b.HasKey("StockPriceId");
                     b.HasIndex("StockCode", "PriceDate").IsUnique();

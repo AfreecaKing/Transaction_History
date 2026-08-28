@@ -85,6 +85,39 @@ namespace WebApplication1.Services
         public List<TodayBatchItem> Prices { get; set; } = new();
     }
 
+    public class StockCandleItem
+    {
+        [JsonPropertyName("date")]
+        public string Date { get; set; } = string.Empty;
+
+        [JsonPropertyName("open")]
+        public decimal Open { get; set; }
+
+        [JsonPropertyName("high")]
+        public decimal High { get; set; }
+
+        [JsonPropertyName("low")]
+        public decimal Low { get; set; }
+
+        [JsonPropertyName("close")]
+        public decimal Close { get; set; }
+
+        [JsonPropertyName("volume")]
+        public long Volume { get; set; }
+    }
+
+    public class StockCandleResult
+    {
+        [JsonPropertyName("stock_code")]
+        public string StockCode { get; set; } = string.Empty;
+
+        [JsonPropertyName("ticker")]
+        public string Ticker { get; set; } = string.Empty;
+
+        [JsonPropertyName("candles")]
+        public List<StockCandleItem> Candles { get; set; } = new();
+    }
+
     public class StockService
     {
         private readonly HttpClient _httpClient;
@@ -145,6 +178,19 @@ namespace WebApplication1.Services
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
             return JsonSerializer.Deserialize<TodayBatchResult>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+        }
+
+        public async Task<StockCandleResult?> GetCandlesAsync(string stockCode, string period, CancellationToken cancellationToken = default)
+        {
+            var url = $"{_baseUrl}/price/candles?stock_code={Uri.EscapeDataString(stockCode)}&period={Uri.EscapeDataString(period)}";
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+            if (!response.IsSuccessStatusCode) return null;
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            return JsonSerializer.Deserialize<StockCandleResult>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });

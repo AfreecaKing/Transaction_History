@@ -22,5 +22,6 @@
         public string PriceDate { get; set; } = string.Empty;  // 股價日期
         public bool HasCompletePrices { get; set; }
         public List<string> MissingPriceCodes { get; set; } = new();
+        public List<string> HoldingStockCodes { get; set; } = new();
     }
 }
